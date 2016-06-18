@@ -14,5 +14,10 @@
     "test": "mocha"
   },
   "author": "",
+  "keywords": [
+      "dependency injection",
+      "es6",
+      "classes"
+  ],
   "license": "ISC"
 }

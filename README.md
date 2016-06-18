@@ -1,5 +1,5 @@
-Funky DI - Dependency injection for classes
-===========================================
+Funky DI - Dependency injection for ES6 classes
+===============================================
 
 This package is focused on dependency injection for
 ES6 classes. If you need dependency injection for
@@ -99,6 +99,12 @@ To inject node modules supply a string as the argument. Unfortunately
 relative paths are not supported, and will throw an error.
 A solution is to use `path.resolve(__dirname, 'relative/path-to-file')`
 
+For a more classical DI feel you can change `options.injectMethod` to
+`constructor`. With Any other methods, they will load after the class
+has been constructed, but with `constructor` as the inject method,
+you will have access to all of your dependencies in the constructor
+as well.
+
 * Default: "inject"
 * How to change:
     * Set `options.injectMethod` to string to change or false to disable
@@ -113,6 +119,17 @@ MyClass {
     }
 }
 ```
+
+#### Important note
+
+If you use any other `injectMethod` than constructor,
+dependencies will be loaded after the constructor has been
+called. If you choose to keep the default `inject` as the
+injection method, you should consider bootstrapping your
+class in this method or outside the method. If you don't
+mind constructing the class asynchronously, you can simply
+call `process.nextTick(() => { /* bootstrap class */ })`
+in the constructor.
 
 #### Angular style or default parameter injection
 
