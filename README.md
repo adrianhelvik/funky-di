@@ -7,7 +7,8 @@ functions as well, you might want to check out
 Codependent - another project I have made.
 But I would recommend using Funky DI instead
 
-This package has zero dependencies and at the time
+This package has zero dependencies(well one dev-dependency
+for testing injection of node modules), and at the time
 of writing it has 55 unit tests, whereas 24 are for the
 container itself and the rest are for parameter parsing.
 
