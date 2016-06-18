@@ -6,9 +6,7 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {
-    "callsites": "^1.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "is-number": "^2.1.0"
   },
