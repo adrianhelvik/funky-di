@@ -28,7 +28,7 @@ const myContainer = new Container(‹options object›);
 
 Possible options:
 * `onlyDefaultParam`: {boolean} Disallow angular style DI
-* `name`: {string} currently not in use
+* `name`: {string} currently not in use - will be used for error checking. Defaults to 'unnamed-' + incrementing id
 * `injectPrefix`: {string|false} Prefix for methods that should utilize type 1 DI, or disable with false (see section "Ways to inject")
 * `injectMethod`: {string|false} Name of method that utilizes type 2 DI, or disable with false (see section "Ways to inject")
 
