@@ -1,0 +1,20 @@
+{
+  "name": "funky-di",
+  "version": "1.0.0",
+  "description": "Funky DI - Dependenct injection for ES6 classes",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "callsites": "^1.0.1"
+  },
+  "devDependencies": {
+    "is-number": "^2.1.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC"
+}
