@@ -5,10 +5,16 @@ This package is focused on dependency injection for
 ES6 classes. If you need dependency injection for
 functions as well, you might want to check out
 Codependent - another project I have made.
+But I would recommend using Funky DI instead
 
 This package has zero dependencies and at the time
 of writing it has 55 unit tests, whereas 24 are for the
 container itself and the rest are for parameter parsing.
+
+Installation
+------------
+
+`npm i funky-di --save`
 
 Creating a container
 --------------------
