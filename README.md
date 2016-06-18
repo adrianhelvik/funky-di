@@ -7,7 +7,7 @@ functions as well, you might want to check out
 Codependent - another project I have made.
 
 This package has zero dependencies and at the time
-of writing it has 52 unit tests, whereas 21 are for the
+of writing it has 55 unit tests, whereas 24 are for the
 container itself and the rest are for parameter parsing.
 
 Creating a container
@@ -87,6 +87,9 @@ injectSomething(x) {
 
 You can use angular style injection (see `OtherDependency` below),
 or use default argument values to inject a value (see `Dependecy` below).
+To inject node modules supply a string as the argument. Unfortunately
+relative paths are not supported, and will throw an error.
+A solution is to use `path.resolve(__dirname, 'relative/path-to-file')`
 
 * Default: "inject"
 * How to change:
@@ -95,8 +98,10 @@ or use default argument values to inject a value (see `Dependecy` below).
 #### Example:
 ```javascript
 MyClass {
-    inject(a = Dependency, OtherDependency) {
-        // 'Dependency' and 'OtherDependency' are looked up
+    inject(a = Dependency, OtherDependency, lodash = 'lodash') {
+        // 'Dependency' is looked up in container
+        // 'OtherDependency' is looked up in container
+        // 'lodash' is required and injected
     }
 }
 ```

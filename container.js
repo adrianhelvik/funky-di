@@ -1,6 +1,5 @@
 'use strict';
 
-const callsites = require('callsites');
 const path = require('path');
 
 const {
@@ -161,7 +160,6 @@ class Container {
     }
 
     inject(clazz, ...args) {
-        console.log('...', callsites()[1].getFileName());
         return this.applyInject(clazz, args);
     }
 
