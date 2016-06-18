@@ -5,7 +5,8 @@ This package is focused on dependency injection for
 ES6 classes. If you need dependency injection for
 functions as well, you might want to check out
 Codependent - another project I have made.
-But I would recommend using Funky DI instead
+But I would recommend using Funky DI instead.
+It has more tests and a more coherent API.
 
 This package has zero dependencies(well one dev-dependency
 for testing injection of node modules), and at the time
