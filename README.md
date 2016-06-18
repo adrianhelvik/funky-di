@@ -1,4 +1,4 @@
-Funky DI - Dependenct injection for classes
+Funky DI - Dependency injection for classes
 ===========================================
 
 This package is focused on dependency injection for
