@@ -14,7 +14,7 @@ container itself and the rest are for parameter parsing.
 Installation
 ------------
 
-`npm i funky-di --save`
+`npm install funky-di --save`
 
 Creating a container
 --------------------
