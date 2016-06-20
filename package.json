@@ -11,10 +11,14 @@
     "camelcase": "^3.0.0"
   },
   "devDependencies": {
-    "is-number": "^2.1.0"
+    "is-number": "^2.1.0",
+    "median": "0.0.2",
+    "memwatch-next": "^0.3.0",
+    "v8-profiler": "^5.6.5"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "gc-analysis": "node --expose-gc --max_old_space_size=100 performance-analysis.js"
   },
   "author": "",
   "keywords": [

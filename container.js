@@ -19,12 +19,7 @@ const {
     upperCaseFirst,
 } = require('./util');
 
-var nextId = (() => {
-    let currentId = 0;
-    return () => {
-        return currentId++;
-    };
-})();
+var lastId = 0;
 
 class Container {
     constructor(options = { injectPrefix: 'inject', name: 'unnamed', injectMethod: 'inject', onlyDefaultParam: true }) {
@@ -33,7 +28,7 @@ class Container {
             throw TypeError('Container options must be an object! Got: ' + options);
         }
 
-        this.id = nextId();
+        this.id = lastId++;
 
         options.name = options.name || 'unnamed ' + this.id;
 
@@ -340,6 +335,7 @@ To disable, set options.onlyDefaultParam to false/undefined.`);
         });
 
     }
+
 }
 
 module.exports = Container;
