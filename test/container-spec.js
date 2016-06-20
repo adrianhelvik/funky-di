@@ -550,4 +550,5 @@ describe('Container', () => {
         assert.doesNotThrow(() => container.putConstant('helloThere', 'nope'));
         assert.doesNotThrow(() => container.putConstant('$helloThere', 'nope'));
     });
+
 });
