@@ -2,7 +2,7 @@ Funky DI - Dependency injection for ES6 classes
 ===============================================
 
 This package is focused on dependency injection for
-ES6 classes. If you need dependency injection for
+ES6 classes in node. If you need dependency injection for
 functions as well, you might want to check out
 Codependent - another project I have made.
 But I would recommend using Funky DI instead.
@@ -10,6 +10,57 @@ It has more tests and a more coherent API.
 
 This package has very few dependencies, and at the time
 of writing it has 72 unit tests.
+
+Immutable
+---------
+
+The containers are immutable and you can never
+overwrite a value in a given container. You
+can however create a new container and extend
+it with another. This new container can have a
+value with the same name as the previous value.
+
+The impact this has on usage is that you should
+create a new container instance if you need to
+replace values, this new container can then
+extend the base container, which holds the more
+persistent data.
+
+Important note
+--------------
+
+This package should only be used on node, not
+in the browser, as the injector relies upon
+parsing the toString of functions for injection.
+
+This will not work if the code is minified.
+
+### Example
+
+```javascript
+const Container = require('funky-di');
+
+const mainContainer = new Container();
+mainContainer.putConstant('apiUrl', 'https://path-to-api.com');
+
+const server = http.createServer((request, response) {
+    const transientContainer = new Container();
+    transientContainer.extend(mainContainer);
+
+    transientContainer.putConstant('request', request);
+    transientContainer.putConstant('response', response);
+
+    transientContainer.injectFunction(requestHandler);
+});
+
+function requestHandler(api = apiUrl, req = request, res = response) {
+    // api is resolved to apiUrl from mainContainer
+    // req is resolved to request from transientContainer
+    // res is resolved to response from transientContainer
+}
+
+server.listen(1999);
+```
 
 Installation
 ------------
@@ -91,7 +142,7 @@ injectSomething(x) {
 
 **Enabled by default**
 
-You can use angular style injection (see `OtherDependency` below),
+You can use angular style injection if enabled (see `OtherDependency` below),
 or use default argument values to inject a value (see `Dependecy` below).
 To inject node modules supply a string as the argument. Unfortunately
 relative paths are not supported, and will throw an error.
@@ -109,10 +160,15 @@ as well.
 
 #### Example:
 ```javascript
+const Container = require('funky-di');
+const container = new Container({
+    onlyDefaultParam: false // defaults to true
+});
+
 MyClass {
     inject(a = Dependency, OtherDependency, lodash = 'lodash') {
         // 'Dependency' is looked up in container
-        // 'OtherDependency' is looked up in container
+        // 'OtherDependency' is looked up in container (for this to work onlyDefaultParam must be false)
         // 'lodash' is required and injected
     }
 }
@@ -132,15 +188,17 @@ in the constructor.
 #### Angular style or default parameter injection
 
 Both are supported when injecting through with Type 2
-injection (and neither with type 1). I prefer the way
-default parameter injection looks, and it allows you
-to inject multiple instances of a class. I find
-the angular style useful in some scenarios, as it's
-more succinct, but it makes it harder to see whether
-the class / method is actually dependency injected.
+injection (and neither with type 1). I prefer default
+parameter injection.
+
+* It is easy to see that the function is injected
+* it allows you to inject multiple instances of a class
+
+I find the angular style useful in some scenarios, as it's
+more succinct and I like to to be able to choose.
 
 For this reason I added the possibility to set
-`option.onlyDefaultParam` if you wish to disallow
+`option.onlyDefaultParam` if you wish to explicitly
 angular style DI.
 
 Testing
@@ -174,13 +232,34 @@ container.putProvider(‹name›, (‹injectables...›) => {
 });
 ```
 
-### Create injectFolder
+### container.injectFolder
 
 ```javascript
-container.injectFolder({
+app.injectFolder(‹folderName›[, ‹options›]);
+```
+
+#### Usage and options
+
+If neither `options.injectionType` or `options.provider`
+is set, the default injection method will be to rely
+on the file names to determine the injection type
+for each file. It follows this pattern: `‹injectedName›.‹injectionType›.js`.
+InjectionType can be `class`, `constant`, `singleton`
+and `provider`.
+
+If `options.injectionType` or `options.provider` is set,
+the pattern will be `‹injectedName›.js`
+
+**The names are lowercased and then camelcased.** so that
+`my-value.constant.js` and `myValue.constant.js` both result
+in the exported value (`module.exports`) being registered under
+the name `myValue`.
+
+```javascript
+const options = {
     injectionType: ‹'class'|'provider'|'singleton'›,
     provider(value) {
         return ...;
     }
-});
+}
 ```

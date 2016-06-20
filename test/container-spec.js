@@ -67,7 +67,7 @@ describe('Container', () => {
         it('can register a provider', () => {
             container.putConstant('hello', 'world');
 
-            container.putProvider('message', (hello) => {
+            container.putProvider('message', (hello = hello) => {
                 return 'hello ' + hello;
             });
 
@@ -150,7 +150,7 @@ describe('Container', () => {
             container.putConstant('hello', 'world');
 
             class Lol {
-                inject(foo = bar, hello) { // eslint-disable-line
+                inject(foo = bar, hello = hello) { // eslint-disable-line
                     this.foo = foo;
                     this.hello = hello;
                 }
@@ -170,7 +170,7 @@ describe('Container', () => {
             });
             container.putConstant('foo', 'bar');
             class Foobie {
-                myMethod(foo) {
+                myMethod(foo = foo) {
                     this.foo = foo;
                 }
             }
@@ -191,7 +191,7 @@ describe('Container', () => {
             let timesCalled = 0;
 
             class Foobie {
-                constructor(foo) {
+                constructor(foo = foo) {
                     this.foo = foo;
                     timesCalled++;
                 }
@@ -497,9 +497,11 @@ describe('Container', () => {
                 assert.equal(container.getInjectable('baz'), 'hello world');
             });
 
-            it('can use a predetermined provider function', () => {
+        });
+
+        describe('options.provider', () => {
+            it('preprocesses the files', () => {
                 container.injectFolder('./inject-folder-test-provider-predefined', {
-                    type: 'provider',
                     provider(value) {
                         return 'Message: ' + value;
                     }
@@ -509,6 +511,19 @@ describe('Container', () => {
 
                 assert.equal(value, 'Message: lol catz');
             });
+        });
+
+        it('throws an exception if options.type and options.provider is set', () => {
+            assert.throws(() => {
+
+                container.injectFolder('./inject-folder-test-provider', {
+                    type: 'provider',
+                    provider(value) {
+                        // should not be called...
+                    }
+                });
+
+            }, /Can not specify options.provider and options.type/);
         });
     });
 

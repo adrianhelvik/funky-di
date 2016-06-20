@@ -27,7 +27,7 @@ var nextId = (() => {
 })();
 
 class Container {
-    constructor(options = { injectPrefix: 'inject', name: 'unnamed', injectMethod: 'inject', onlyDefaultParam: false }) {
+    constructor(options = { injectPrefix: 'inject', name: 'unnamed', injectMethod: 'inject', onlyDefaultParam: true }) {
 
         if (typeof options !== 'object' || ! options) {
             throw TypeError('Container options must be an object! Got: ' + options);
@@ -49,7 +49,7 @@ class Container {
             options.name = 'inject';
         }
         if (options.onlyDefaultParam === undefined) {
-            options.onlyDefaultParam = false;
+            options.onlyDefaultParam = true;
         }
         if (options.injectMethod === undefined) {
             options.injectMethod = 'inject';
@@ -309,10 +309,15 @@ To disable, set options.onlyDefaultParam to false/undefined.`);
                 this[`put${upperCaseFirst(type)}`](camelName, val);
             };
 
-            if (options.type === 'provider') {
-                if (typeof options.provider === 'function') {
-                    return putType('provider', () => options.provider(value));
-                }
+            if (typeof options.provider === 'function' && options.type) {
+                throw TypeError('Container.injectFolder: Can not specify options.provider and options.type');
+            }
+
+            if (typeof options.provider === 'function') {
+                return putType('provider', () => options.provider(value));
+            }
+
+            if (options.type === 'provider' || options.provider) {
                 return putType('provider');
             }
             if (options.type === 'constant') {
