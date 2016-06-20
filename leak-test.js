@@ -34,7 +34,7 @@ intId = setInterval(() => {
         console.log('\n\nWarmup complete!\n');
         memwatch.on('leak', info => {
             leakCount++;
-            console.log('\n', info, '\n');
+            console.log('\n', info, '\nMemory usage:' + process.memoryUsage(), '\n');
         });
     }
 
