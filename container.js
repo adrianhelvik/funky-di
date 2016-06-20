@@ -255,12 +255,7 @@ To disable, set options.onlyDefaultParam to false/undefined.`);
             return;
         }
 
-        // TODO: Use injectFunction
-
-        const params = getDefaultParams(instance[this.options.injectMethod]);
-        const injectedArgs = this._getInjectableFromParameters(params);
-
-        return instance[this.options.injectMethod].apply(instance, injectedArgs);
+        return this.injectFunction(instance, instance[this.options.injectMethod]);
     }
 
     extend(other) {
