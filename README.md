@@ -8,10 +8,8 @@ Codependent - another project I have made.
 But I would recommend using Funky DI instead.
 It has more tests and a more coherent API.
 
-This package has zero dependencies(well one dev-dependency
-for testing injection of node modules), and at the time
-of writing it has 55 unit tests, whereas 24 are for the
-container itself and the rest are for parameter parsing.
+This package has very few dependencies, and at the time
+of writing it has 72 unit tests.
 
 Installation
 ------------
@@ -35,18 +33,18 @@ Possible options:
 Injecting a class
 -----------------
 
-### Container.inject(‹class›, ...‹args›)
+### container.inject(‹class›, ...‹args›)
 
-Container.inject is the same as calling `new MyClass(arg1, arg2, arg3)`,
+container.inject is the same as calling `new MyClass(arg1, arg2, arg3)`,
 except it is also dependency injected.
 
 ```javascript
 const myInstance = myContainer.inject(MyClass, arg1, arg2, arg3);
 ```
 
-### Container.applyInject(‹class› ‹array of args›)
+### container.applyInject(‹class› ‹array of args›)
 
-Container.applyInject uses Reflect.construct behind the scenes,
+container.applyInject uses Reflect.construct behind the scenes,
 and resembles Function.prototype.apply, except it is newed up.
 The code below is equivalent to the code above.
 
@@ -156,6 +154,33 @@ Pull requests
 
 * Create a new branch
 * Write tests
+* Implement functionality
 * Send pull request
-# funky-di
 
+TODO
+----
+
+### Create container.injectFunction
+
+```javascript
+container.injectFunction(‹name›, ‹function›);
+```
+
+### Create container.putProvider method
+
+```javascript
+container.putProvider(‹name›, (‹injectables...›) => {
+    // return injectable
+});
+```
+
+### Create injectFolder
+
+```javascript
+container.injectFolder({
+    injectionType: ‹'class'|'provider'|'singleton'›,
+    provider(value) {
+        return ...;
+    }
+});
+```

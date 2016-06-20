@@ -13,6 +13,8 @@ module.exports = {
     hasMethods,
     implementOrThrow,
     isDefined,
+    removeSuffix,
+    upperCaseFirst,
 };
 
 function deleteAll(obj, attrs) {
@@ -29,8 +31,16 @@ function removePrefix(original, prefix) {
     return original.substring(prefix.length, original.length);
 }
 
+function removeSuffix(original, suffix) {
+    return original.substring(0, original.length - suffix.length);
+}
+
 function lowerCaseFirst(string) {
     return string[0].toLowerCase() + string.substring(1, string.length);
+}
+
+function upperCaseFirst(string) {
+    return string[0].toUpperCase() + string.substring(1, string.length);
 }
 
 function delimiterParser(someJavascript, conditions, postCondition) {

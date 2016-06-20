@@ -1,6 +1,9 @@
 'use strict';
 
 const path = require('path');
+const fs = require('fs');
+const camelcase = require('camelcase');
+const callsites = require('callsites');
 
 const {
     deleteAll,
@@ -11,7 +14,9 @@ const {
     getAllMethods,
     getDefaultParams,
     implementOrThrow,
-    isDefined
+    isDefined,
+    removeSuffix,
+    upperCaseFirst,
 } = require('./util');
 
 var nextId = (() => {
@@ -55,6 +60,7 @@ class Container {
         this.class = {};
         this.constant = {};
         this.singleton = {};
+        this.provider = {};
 
         this.singletonInstances = {};
 
@@ -66,7 +72,11 @@ class Container {
         }
     }
 
-    _verifyNotDefined(name) {
+    _verifyName(name) {
+        if (typeof name !== 'string' || ! /^[a-zA-Z$_][a-zA-Z0-9$_]*$/.test(name)) {
+            throw Error('Container: Invalid name');
+        }
+
         const puttable = getMethodsWithPrefix(Container, 'put')
             .map(method => removePrefix(method, 'put'))
             .map(lowerCaseFirst);
@@ -79,22 +89,37 @@ class Container {
         }
     }
 
+    _verifyIsFunction(name, value) {
+        if (typeof value !== 'function') {
+            throw TypeError('Error when registering "' + name + '" A function is required. Got: ' + value); // TODO: Refine check to test if something is a class
+        }
+    }
+
     putConstant(name, constant) {
-        this._verifyNotDefined(name);
+        this._verifyName(name);
 
         this.constant[name] = constant;
     }
 
     putClass(name, clazz) {
-        this._verifyNotDefined(name);
+        this._verifyName(name);
+        this._verifyIsFunction(name, clazz);
 
         this.class[name] = clazz;
     }
 
     putSingleton(name, clazz) {
-        this._verifyNotDefined(name);
+        this._verifyName(name);
+        this._verifyIsFunction(name, clazz);
 
         this.singleton[name] = clazz;
+    }
+
+    putProvider(name, providerFn) {
+        this._verifyName(name);
+        this._verifyIsFunction(name, providerFn);
+
+        this.provider[name] = providerFn;
     }
 
     getInjectable(name) {
@@ -102,6 +127,7 @@ class Container {
         if (name.startsWith('\'') && name.endsWith('\'') || name.startsWith('"') && name.endsWith('"')) {
             name = name.substring(1, name.length - 1);
 
+            // Relative injections are not supported
             if (name.startsWith('.')) {
                 throw Error('funky-di: Cannot resolve node modules from relative paths.');
             }
@@ -121,6 +147,9 @@ class Container {
             const instance = this.inject(this.singleton[name], []);
             this.singletonInstances[name] = instance;
             return this.getInjectable(name);
+        }
+        if (this.provider[name]) {
+            return this.injectFunction(this.provider[name]);
         }
 
         for (let i = this.extendedContainers.length - 1; i >= 0; i--) {
@@ -226,16 +255,90 @@ To disable, set options.onlyDefaultParam to false/undefined.`);
             return;
         }
 
+        // TODO: Use injectFunction
+
         const params = getDefaultParams(instance[this.options.injectMethod]);
         const injectedArgs = this._getInjectableFromParameters(params);
 
-        instance[this.options.injectMethod].apply(instance, injectedArgs);
+        return instance[this.options.injectMethod].apply(instance, injectedArgs);
     }
 
     extend(other) {
         implementOrThrow(other, ['getInjectable', 'containsInjectable']);
 
         this.extendedContainers.push(other);
+    }
+
+    injectFunction(thisArg, fn) {
+        if (typeof fn !== 'function') {
+            fn = thisArg;
+        }
+
+        const params = getDefaultParams(fn);
+        const injectedArgs = this._getInjectableFromParameters(params);
+
+        return fn.apply(thisArg, injectedArgs);
+    }
+
+    // TODO: Does too much. Refactor.
+    injectFolder(folderName, options = {}) {
+        let calledFrom = callsites()[1].getFileName().split('/');
+        calledFrom = calledFrom.slice(0, calledFrom.length - 1).join('/');
+
+        folderName = path.resolve(calledFrom, folderName);
+
+        const fileNames = fs.readdirSync(folderName);
+
+        fileNames.forEach(fileName => {
+
+            if (! fileName.endsWith('.js')) {
+                return;
+            }
+
+            const value = require(path.resolve(folderName, fileName));
+            const lowercaseName = fileName.toLowerCase();
+
+            const tryType = (type) => {
+                if (fileName.endsWith(`.${type}.js`)) {
+                    const unSuffixed = removeSuffix(fileName, `.${type}.js`);
+                    const camelName = camelcase(unSuffixed);
+                    this[`put${upperCaseFirst(type)}`](camelName, value);
+                    return true;
+                }
+                return false;
+            };
+
+            const putType = (type, val = value) => {
+                const unSuffixed = removeSuffix(fileName, '.js');
+                const camelName = camelcase(unSuffixed);
+                this[`put${upperCaseFirst(type)}`](camelName, val);
+            };
+
+            if (options.type === 'provider') {
+                if (typeof options.provider === 'function') {
+                    return putType('provider', () => options.provider(value));
+                }
+                return putType('provider');
+            }
+            if (options.type === 'constant') {
+                return putType('constant');
+            }
+            if (options.type === 'class') {
+                return putType('class');
+            }
+            if (options.type === 'singleton') {
+                return putType('singleton');
+            }
+
+            if (tryType('provider')) { return; }
+            if (tryType('constant')) { return; }
+            if (tryType('class')) { return; }
+            if (tryType('singleton')) { return; }
+
+            throw TypeError('Container.injectFolder: file name must end with .class.js, .provider.js, .constant.js or .singleton.js');
+
+        });
+
     }
 }
 

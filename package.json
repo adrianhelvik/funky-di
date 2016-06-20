@@ -6,7 +6,10 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {},
+  "dependencies": {
+    "callsites": "^1.0.1",
+    "camelcase": "^3.0.0"
+  },
   "devDependencies": {
     "is-number": "^2.1.0"
   },
@@ -15,9 +18,9 @@
   },
   "author": "",
   "keywords": [
-      "dependency injection",
-      "es6",
-      "classes"
+    "dependency injection",
+    "es6",
+    "classes"
   ],
   "license": "ISC"
 }

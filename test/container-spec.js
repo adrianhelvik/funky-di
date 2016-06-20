@@ -40,6 +40,10 @@ describe('Container', () => {
             assert.ok(b instanceof NoDeps);
             assert.notEqual(a, b);
         });
+
+        it('must be typeof "function"', () => {
+            assert.throws(() => container.putClass(''), 'nope');
+        });
     });
 
     describe('.putSingleton', () => {
@@ -52,6 +56,28 @@ describe('Container', () => {
             assert.ok(a instanceof NoDeps);
             assert.ok(b instanceof NoDeps);
             assert.equal(a, b);
+        });
+
+        it('must be typeof "function"', () => {
+            assert.throws(() => container.putSingleton(''), 'nope');
+        });
+    });
+
+    describe('.putProvider', () => {
+        it('can register a provider', () => {
+            container.putConstant('hello', 'world');
+
+            container.putProvider('message', (hello) => {
+                return 'hello ' + hello;
+            });
+
+            const message = container.getInjectable('message');
+
+            assert.equal(message, 'hello world');
+        });
+
+        it('must be typeof "function"', () => {
+            assert.throws(() => container.putProvider(''), 'nope');
         });
     });
 
@@ -364,5 +390,149 @@ describe('Container', () => {
 
         assert.throws(() => container.inject(ShouldFail));
         assert.doesNotThrow(() => container.inject(ShouldPass));
+    });
+
+    describe('.injectFunction', () => {
+        it('can inject into a function', () => {
+            container.putConstant('hello', 'world');
+
+            let hello;
+            container.injectFunction((x = hello) => {
+                hello = x;
+            });
+
+            assert.equal(hello, 'world');
+        });
+
+        it('can inject into a function with a thisArg', () => {
+            container.putConstant('hello', 'world');
+            const thisArg = {};
+
+            let hello;
+            container.injectFunction(thisArg, function (x = hello) {
+                this.hello = x;
+            });
+
+            assert.equal(thisArg.hello, 'world');
+        });
+    });
+
+    describe('.injectFolder', () => {
+        it('throws a relevant error if a value in the folder is not of the correct type');
+
+        it('can inject all files in a folder - and determine their type', () => {
+            container.injectFolder('./inject-folder-test-suffix');
+
+            const helloWorld = container.getInjectable('helloWorld');
+            const config = container.getInjectable('config');
+            const someClassA = container.getInjectable('someClass');
+            const someClassB = container.getInjectable('someClass');
+            const someOtherClassA = container.getInjectable('someOtherClass');
+            const someOtherClassB = container.getInjectable('someOtherClass');
+
+            const SomeClass = require('./inject-folder-test-suffix/some-class.class.js');
+            const SomeOtherClass = require('./inject-folder-test-suffix/some-other-class.singleton.js');
+
+            assert.equal(helloWorld, 'hello world');
+            assert.deepEqual(config, { message: 'hello world' });
+
+            assert.ok(someClassA instanceof SomeClass);
+            assert.ok(someClassB instanceof SomeClass);
+            assert.ok(someClassA !== someClassB);
+
+            assert.ok(someOtherClassA instanceof SomeOtherClass);
+            assert.ok(someOtherClassB instanceof SomeOtherClass);
+            assert.ok(someOtherClassA === someOtherClassB);
+        });
+
+        it('will throw an error if a file in the folder does not end with .class.js, .provider.js, .constant.js, .singleton.js', () => {
+            assert.throws(() => container.injectFolder('./'));
+        });
+
+        describe('options.type', () => {
+            it('can be constant', () => {
+                container.injectFolder('./inject-folder-test-constant', {
+                    type: 'constant'
+                });
+
+                assert.equal(container.getInjectable('a'), 'a');
+                assert.equal(container.getInjectable('b'), 'b');
+            });
+
+            it('can be class', () => {
+                container.injectFolder('./inject-folder-test-class', {
+                    type: 'class'
+                });
+
+                const someClassA = container.getInjectable('someClass');
+                const someClassB = container.getInjectable('someClass');
+                const SomeClass = require('./inject-folder-test-class/SomeClass');
+
+                assert.ok(someClassA instanceof SomeClass);
+                assert.ok(someClassB instanceof SomeClass);
+                assert.ok(someClassA !== someClassB);
+            });
+
+            it('can be singleton', () => {
+                container.injectFolder('./inject-folder-test-singleton', {
+                    type: 'singleton'
+                });
+
+                const lolA = container.getInjectable('lol');
+                const lolB = container.getInjectable('lol');
+                const Lol = require('./inject-folder-test-singleton/lol');
+
+                assert.ok(lolA instanceof Lol);
+                assert.ok(lolB instanceof Lol);
+                assert.ok(lolA === lolB);
+            });
+
+            it('can be provider', () => {
+                container.putConstant('helloWorld', 'hello world');
+
+                container.injectFolder('./inject-folder-test-provider', {
+                    type: 'provider'
+                });
+
+                assert.equal(container.getInjectable('baz'), 'hello world');
+            });
+
+            it('can use a predetermined provider function', () => {
+                container.injectFolder('./inject-folder-test-provider-predefined', {
+                    type: 'provider',
+                    provider(value) {
+                        return 'Message: ' + value;
+                    }
+                });
+
+                const value = container.getInjectable('lolcatz');
+
+                assert.equal(value, 'Message: lol catz');
+            });
+        });
+    });
+
+    it('can register all falsey values except undefined', () => {
+        container.putConstant('nada', null);
+        container.putConstant('no', false);
+        container.putConstant('zero', 0);
+        container.putConstant('undef', undefined);
+
+        const nada = container.getInjectable('nada');
+        const no = container.getInjectable('no');
+        const zero = container.getInjectable('zero');
+
+        assert.strictEqual(nada, null);
+        assert.strictEqual(no, false);
+        assert.strictEqual(zero, 0);
+        assert.throws(() => container.getInjectable('undef'));
+    });
+
+    it('must be named with camel or snake case', () => {
+        assert.throws(() => container.putConstant('hello there', 'nope'), /Invalid name/);
+        assert.throws(() => container.putConstant('hello-there', 'nope'), /Invalid name/);
+        assert.doesNotThrow(() => container.putConstant('hello_there', 'nope'));
+        assert.doesNotThrow(() => container.putConstant('helloThere', 'nope'));
+        assert.doesNotThrow(() => container.putConstant('$helloThere', 'nope'));
     });
 });

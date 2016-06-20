@@ -312,4 +312,17 @@ describe('util', () => {
             assert.equal(util.isDefined(undefined), false);
         });
     });
+
+    describe('.removeSuffix', () => {
+        it('removes a suffix from a string', () => {
+            assert.equal(util.removeSuffix('hello world', ' world'), 'hello');
+        });
+    });
+    describe('.upperCaseFirst', () => {
+        it('uppercases the first letter of a word', () => {
+            assert.equal(util.upperCaseFirst('hello world'), 'Hello world');
+            assert.equal(util.upperCaseFirst('hELLO WORLD'), 'HELLO WORLD');
+            assert.equal(util.upperCaseFirst('Hello world'), 'Hello world');
+        });
+    });
 });
