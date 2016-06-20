@@ -11,6 +11,15 @@ It has more tests and a more coherent API.
 This package has very few dependencies, and at the time
 of writing it has 72 unit tests.
 
+Important note
+--------------
+
+This package should only be used on node, not
+in the browser, as the injector relies upon
+parsing the toString of functions for injection.
+
+This will not work if the code is minified.
+
 Immutable
 ---------
 
@@ -25,15 +34,6 @@ create a new container instance if you need to
 replace values, this new container can then
 extend the base container, which holds the more
 persistent data.
-
-Important note
---------------
-
-This package should only be used on node, not
-in the browser, as the injector relies upon
-parsing the toString of functions for injection.
-
-This will not work if the code is minified.
 
 ### Example
 
