@@ -17,7 +17,7 @@ const {
     isDefined,
     removeSuffix,
     upperCaseFirst,
-} = require('./util');
+} = require('funky-di-util');
 
 var lastId = 0;
 
