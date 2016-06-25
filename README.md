@@ -22,7 +22,7 @@ Installation
 Important note
 --------------
 
-This package should only be used on node, not
+This package should only be used with node, not
 in the browser, as the injector relies upon
 parsing the toString of functions for injection.
 
