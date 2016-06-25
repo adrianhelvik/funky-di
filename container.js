@@ -259,7 +259,7 @@ class Container {
             } else {
                 throw TypeError(
 `Angular style injection disabled!. Use default parameter injection instead.
-Replace:
+Replace this style:
 
     class MyClass {
         inject(MyInjectable) {
@@ -267,7 +267,7 @@ Replace:
         }
     }
 
-with:
+with this style:
 
     class MyClass {
         inject(x = MyInjectable) {
@@ -275,7 +275,7 @@ with:
         }
     }
 
-To disable, set options.onlyDefaultParam to false/undefined.`);
+To disable, set options.onlyDefaultParam to false.`);
             }
         }
 
