@@ -258,7 +258,9 @@ class Container {
                 injectedArgs.push(this.getInjectable(key));
             } else {
                 throw TypeError(
-`Angular style injection disabled!. Use default parameter injection instead.
+`Tried injecting for parameter "${key}" which had no injectable specified,
+but Angular style injection is disabled! Use default parameter injection instead.
+
 Replace this style:
 
     class MyClass {

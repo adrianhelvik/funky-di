@@ -1,6 +1,6 @@
 {
   "name": "funky-di",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Funky DI - Dependency injection for ES6 classes",
   "main": "container.js",
   "directories": {
