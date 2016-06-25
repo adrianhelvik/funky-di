@@ -277,7 +277,7 @@ with this style:
         }
     }
 
-To disable, set options.onlyDefaultParam to false.`);
+To enable Angular style DI, set options.onlyDefaultParam to false.`);
             }
         }
 
