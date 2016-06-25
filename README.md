@@ -84,7 +84,7 @@ const myContainer = new Container(‹options object›);
 ```
 
 Possible options:
-* `onlyDefaultParam`: {boolean} Disallow angular style DI
+* `onlyDefaultParam`: {boolean} Disallow angular style DI (default: true)
 * `name`: {string} currently not in use - will be used for error checking. Defaults to 'unnamed-' + incrementing id
 * `injectPrefix`: {string|false} Prefix for methods that should utilize type 1 DI, or disable with false (see section "Ways to inject")
 * `injectMethod`: {string|false} Name of method that utilizes type 2 DI, or disable with false (see section "Ways to inject")
@@ -211,8 +211,7 @@ I find the angular style useful in some scenarios, as it's
 more succinct and I like to to be able to choose.
 
 For this reason I added the possibility to set
-`option.onlyDefaultParam` if you wish to explicitly
-angular style DI.
+`option.onlyDefaultParam` if you wish to enable angular style DI.
 
 ### container.injectFunction
 
