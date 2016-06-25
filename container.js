@@ -271,6 +271,11 @@ To disable, set options.onlyDefaultParam to false/undefined.`);
     }
 
     // TODO: Does too much. Refactor.
+    //
+    //
+    //
+    //
+    // ... please
     injectFolder(folderName, options = {}) {
         let calledFrom = callsites()[1].getFileName().split('/');
         calledFrom = calledFrom.slice(0, calledFrom.length - 1).join('/');
@@ -300,7 +305,10 @@ To disable, set options.onlyDefaultParam to false/undefined.`);
 
             const putType = (type, val = value) => {
                 const unSuffixed = removeSuffix(fileName, '.js');
-                const camelName = camelcase(unSuffixed);
+                let camelName = camelcase(unSuffixed);
+                if (options.useClassName) {
+                    camelName = val.name;
+                }
                 this[`put${upperCaseFirst(type)}`](camelName, val);
             };
 

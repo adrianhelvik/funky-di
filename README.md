@@ -218,10 +218,12 @@ Pull requests
 TODO
 ----
 
+### Make it possible to use class name for injectFolder
+
 ### Create container.injectFunction
 
 ```javascript
-container.injectFunction(‹name›, ‹function›);
+container.injectFunction([‹thisArg›, ]‹function›);
 ```
 
 ### Create container.putProvider method

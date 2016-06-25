@@ -142,6 +142,29 @@ describe('Container', () => {
 
             assert.equal(instance.hello, undefined);
         });
+
+        it('will try both the lower and upper camelcased version', () => {
+            container.putConstant('Hello', 'world');
+            container.putConstant('cat', 'piano');
+
+            class Pascal {
+                injectHello(world) {
+                    this.world = world;
+                }
+            }
+
+            class Camel {
+                injectCat(piano) {
+                    this.piano = piano;
+                }
+            }
+
+            const pas = container.inject(Pascal);
+            const cam = container.inject(Pascal);
+
+            assert.equal(pas.word, 'world');
+            assert.equal(cam.piano, 'piano');
+        });
     });
 
     describe('.injectInjectMethod', () => {
@@ -447,6 +470,17 @@ describe('Container', () => {
 
         it('will throw an error if a file in the folder does not end with .class.js, .provider.js, .constant.js, .singleton.js', () => {
             assert.throws(() => container.injectFolder('./'));
+        });
+
+        describe('options.useClassName', () => {
+            it('specifies to use the class name and not the file name for injection', () => {
+                container.injectFolder('./inject-folder-useClassName', {
+                    useClassName: true,
+                    type: 'class'
+                });
+
+                assert.doesNotThrow(() => container.getInjectable('ThisIsItsRealName'));
+            });
         });
 
         describe('options.type', () => {
