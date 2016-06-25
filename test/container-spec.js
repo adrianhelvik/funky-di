@@ -160,9 +160,9 @@ describe('Container', () => {
             }
 
             const pas = container.inject(Pascal);
-            const cam = container.inject(Pascal);
+            const cam = container.inject(Camel);
 
-            assert.equal(pas.word, 'world');
+            assert.equal(pas.world, 'world');
             assert.equal(cam.piano, 'piano');
         });
     });

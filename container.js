@@ -188,23 +188,52 @@ class Container {
     }
 
     injectPrefixedMethods(clazz, instance) {
+
+        // Check if injectPrefix is disabled
         if (typeof this.options.injectPrefix !== 'string') {
+
+            // Check if injectPrefix is actually false
             if (this.options.injectPrefix !== false) {
                 console.log(this.options);
                 throw TypeError('options.injectPrefix must be string or false');
             }
+
+            // .. if disabled, don't inject prefixed methods
             return instance;
         }
 
+        // find prefixed methods
         const prefixedMethods = getMethodsWithPrefix(clazz, this.options.injectPrefix)
             .filter(method => method !== this.options.injectPrefix);
 
+        // remove prefix and find name of injectable
         const attrs = prefixedMethods
-            .map(method => removePrefix(method, this.options.injectPrefix))
-            .map(lowerCaseFirst);
+            .map(method => removePrefix(method, this.options.injectPrefix));
 
+        // get the injected and inject the method
         for (let i = 0; i < prefixedMethods.length; i++) {
-            instance[prefixedMethods[i]](this.getInjectable(attrs[i]));
+            const lcfName = lowerCaseFirst(attrs[i]);
+            const ucfName = upperCaseFirst(attrs[i]);
+
+            let injectName = null;
+
+            // get either upper case first value
+            if (this.containsInjectable(lcfName)) {
+                injectName = lcfName;
+            }
+
+            // .. or upper case first value
+            else if (this.containsInjectable(ucfName)) {
+                injectName = ucfName;
+            }
+
+            // .. or throw a tantruem
+            else {
+                throw Error('Neither ' + attrs[i] + ' or ' + lowerCaseFirst(attrs[i]) + ' in container');
+            }
+
+            // And call the method with the injected value
+            instance[prefixedMethods[i]](this.getInjectable(injectName));
         }
 
         return instance;
