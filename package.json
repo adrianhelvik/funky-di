@@ -1,10 +1,14 @@
 {
   "name": "funky-di",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "Funky DI - Dependency injection for ES6 classes",
   "main": "container.js",
   "directories": {
     "test": "test"
+  },
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/adrianhelvik/funky-di"
   },
   "dependencies": {
     "callsites": "^1.0.1",

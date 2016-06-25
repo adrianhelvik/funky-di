@@ -10,7 +10,9 @@ It has more tests and a more coherent API.
 
 This package has very few dependencies, and at the time
 of writing it has 42 unit tests. It utilizes funky-di-util
-which has 33 unit tests.
+which has 33 unit tests. So if anything is unclear about
+how the package works, clone the repo and run
+npm test.
 
 Installation
 ------------
@@ -212,27 +214,17 @@ For this reason I added the possibility to set
 `option.onlyDefaultParam` if you wish to explicitly
 angular style DI.
 
-Testing
--------
+### container.injectFunction
 
-* `npm i -g mocha`
-* `mocha` or `npm test`
-
-Pull requests
--------------
-
-* Create a new branch
-* Write tests
-* Implement functionality
-* Send pull request
-
-### Create container.injectFunction
+Inject dependencies into a function.
 
 ```javascript
 container.injectFunction([‹thisArg›, ]‹function›);
 ```
 
-### Create container.putProvider
+### container.putProvider
+
+This function is called every time you inject the value.
 
 ```javascript
 container.putProvider(‹name›, (‹injectables...›) => {
@@ -241,6 +233,9 @@ container.putProvider(‹name›, (‹injectables...›) => {
 ```
 
 ### container.injectFolder
+
+Load all js-files within a folder and register them
+in the container. (more info under usage and options)
 
 ```javascript
 app.injectFolder(‹folderName›[, ‹options›]);
@@ -275,11 +270,40 @@ const options = {
 }
 ```
 
-Memory leak test
-----------------
+Testing
+-------
 
-I made a simple memory leak test. To run it use `npm start leak-check`.
+### Unit testing
+
+* `npm i -g mocha`
+* `mocha` or `npm test`
+
+### Memory leak test
+
+I made a simple memory leak test. To run it use `npm run leak-check`.
 I did this to ensure that a functional approach (with transient containers)
 would not cause any memory leaks.
 
 The test has run for more than an hour without any leaks being detected.
+
+Pull requests
+-------------
+
+* Create a new branch
+* Write tests
+* Implement functionality
+* Send pull request
+
+Licence: ISC
+============
+
+Copyright (c) 2016(s), Adrian Helvik
+
+Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
+granted, provided that the above copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE
+INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE
+FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
