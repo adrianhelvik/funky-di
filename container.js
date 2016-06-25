@@ -19,6 +19,15 @@ const {
     upperCaseFirst,
 } = require('funky-di-util');
 
+// TODO: Use symbols for private access
+const s = {
+    'class': Symbol('class container'),
+    'provider': Symbol('provider container'),
+    'singleton': Symbol('singleton container'),
+    'singletonInstances': Symbol('singleton instances container')
+};
+
+// Used to increment the id
 var lastId = 0;
 
 class Container {
@@ -57,7 +66,7 @@ class Container {
         this.singleton = {};
         this.provider = {};
 
-        this.singletonInstances = {};
+        this[s.singletonInstances] = {};
 
         this.extendedContainers = [];
 
@@ -135,12 +144,12 @@ class Container {
         if (this.class[name]) {
             return this.inject(this.class[name]);
         }
-        if (this.singletonInstances[name]) {
-            return this.singletonInstances[name];
+        if (this[s.singletonInstances][name]) {
+            return this[s.singletonInstances][name];
         }
         if (this.singleton[name]) {
             const instance = this.inject(this.singleton[name], []);
-            this.singletonInstances[name] = instance;
+            this[s.singletonInstances][name] = instance;
             return this.getInjectable(name);
         }
         if (this.provider[name]) {
@@ -159,7 +168,7 @@ class Container {
     containsInjectable(name) {
         return isDefined(this.constant[name]) ||
             this.class[name] ||
-            this.singletonInstances[name] ||
+            this[s.singletonInstances][name] ||
             this.singleton[name] ||
             this.extendedContainers.some(c => c.containsInjectable(name));
     }
@@ -217,7 +226,7 @@ class Container {
 
             let injectName = null;
 
-            // get either upper case first value
+            // get either lower case first value
             if (this.containsInjectable(lcfName)) {
                 injectName = lcfName;
             }

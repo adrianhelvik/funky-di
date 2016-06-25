@@ -9,7 +9,13 @@ But I would recommend using Funky DI instead.
 It has more tests and a more coherent API.
 
 This package has very few dependencies, and at the time
-of writing it has 72 unit tests.
+of writing it has 42 unit tests. It utilizes funky-di-util
+which has 33 unit tests.
+
+Installation
+------------
+
+`npm install --save funky-di`
 
 Important note
 --------------
@@ -130,11 +136,16 @@ Ways to inject
 * Default: "inject"
 * How to change prefix:
     * Set `options.injectPrefix` to a string to change or false to disable
+* Casing of first letter is ignored.
+    * Lower case first letter is first attempted
+    * then upper case first letter is attempted
 
 #### Example:
 ```javascript
-injectSomething(x) {
-    // 'something' is looked up
+class MyClass {
+    injectSomething(x) {
+        // 'something' is looked up
+    }
 }
 ```
 
@@ -218,8 +229,6 @@ Pull requests
 TODO
 ----
 
-### Make it possible to use class name for injectFolder
-
 ### Create container.injectFunction
 
 ```javascript
@@ -238,6 +247,7 @@ container.putProvider(‹name›, (‹injectables...›) => {
 
 ```javascript
 app.injectFolder(‹folderName›[, ‹options›]);
+
 ```
 
 #### Usage and options
@@ -252,10 +262,12 @@ and `provider`.
 If `options.injectionType` or `options.provider` is set,
 the pattern will be `‹injectedName›.js`
 
-**The names are lowercased and then camelcased.** so that
-`my-value.constant.js` and `myValue.constant.js` both result
-in the exported value (`module.exports`) being registered under
-the name `myValue`.
+By default **The names are lowercased and then camelcased.**
+so that `my-value.constant.js` and `myValue.constant.js` both
+result in the exported value (`module.exports`) being registered
+under the name `myValue`. If `options.injectionType` is set to class,
+you can set `options.useClassName` to true to rely on the `name`
+property of classes instead of the file names.
 
 ```javascript
 const options = {
@@ -273,16 +285,4 @@ I made a simple memory leak test. To run it use `npm start leak-check`.
 I did this to ensure that a functional approach (with transient containers)
 would not cause any memory leaks.
 
-### Result
-
-```
-Testing memory usage
-Warming up with 10 iterations to prevent false positives.
-.........
-
-Warmup complete!
-
-..................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................^C
-
-Tested 1825 iterations. Leaked 0 times. Ran for 3856.408 seconds.
-```
+The test has run for more than an hour without any leaks being detected.
