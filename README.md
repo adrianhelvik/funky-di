@@ -226,16 +226,13 @@ Pull requests
 * Implement functionality
 * Send pull request
 
-TODO
-----
-
 ### Create container.injectFunction
 
 ```javascript
 container.injectFunction([‹thisArg›, ]‹function›);
 ```
 
-### Create container.putProvider method
+### Create container.putProvider
 
 ```javascript
 container.putProvider(‹name›, (‹injectables...›) => {
