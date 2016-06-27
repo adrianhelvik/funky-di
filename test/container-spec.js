@@ -188,6 +188,26 @@ describe('Container', () => {
             assert.equal(instance.shouldBeZero, 0);
             assert.equal(instance.shouldBeOne, 1);
         });
+
+        it('is called on subclasses', () => {
+            container.putConstant('message', 'Hello world');
+
+            class Master {
+                injectMessage(message) {
+                    this.message = message;
+                }
+            }
+
+            class Sub extends Master {
+                getMessage() {
+                    return this.message;
+                }
+            }
+
+            const instance = container.inject(Sub);
+
+            assert.equal(instance.getMessage(), 'Hello world');
+        });
     });
 
     describe('.injectInjectMethod', () => {
