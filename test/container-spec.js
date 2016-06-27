@@ -165,6 +165,29 @@ describe('Container', () => {
             assert.equal(pas.world, 'world');
             assert.equal(cam.piano, 'piano');
         });
+
+        it('is called before the inject method', () => {
+            let i = 0;
+
+            container.putProvider('counter', () => {
+                return i++;
+            });
+
+            class MyClass {
+                inject(count = counter) {
+                    this.shouldBeOne = count;
+                }
+
+                injectCounter(count) {
+                    this.shouldBeZero = count;
+                }
+            }
+
+            const instance = container.inject(MyClass);
+
+            assert.equal(instance.shouldBeZero, 0);
+            assert.equal(instance.shouldBeOne, 1);
+        });
     });
 
     describe('.injectInjectMethod', () => {
@@ -316,6 +339,18 @@ describe('Container', () => {
     });
 
     describe('.containsInjectable', () => {
+        it('works for all types', () => {
+            container.putConstant('constant', class {});
+            container.putSingleton('singleton', class {});
+            container.putClass('class', class {});
+            container.putProvider('provider', function () {});
+
+            assert.ok(container.containsInjectable('constant'));
+            assert.ok(container.containsInjectable('singleton'));
+            assert.ok(container.containsInjectable('class'));
+            assert.ok(container.containsInjectable('provider'));
+        });
+
         it('returns whether the container or the containers it extends has access to the injectable', () => {
 
             // Arrange...

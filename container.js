@@ -170,6 +170,7 @@ class Container {
             this.class[name] ||
             this[s.singletonInstances][name] ||
             this.singleton[name] ||
+            this.provider[name] ||
             this.extendedContainers.some(c => c.containsInjectable(name));
     }
 
@@ -197,7 +198,6 @@ class Container {
     }
 
     injectPrefixedMethods(clazz, instance) {
-
         // Check if injectPrefix is disabled
         if (typeof this.options.injectPrefix !== 'string') {
 
